@@ -10,12 +10,7 @@ const app = express();
 
 // Use CORS middleware
 app.use(
-  cors({
-    origin:
-      "https://sarika-agrawal.github.io/Project-Submission-Form/public/index.html", // Allow your GitHub Pages domain
-    methods: ["GET", "POST"], // Specify allowed methods
-    credentials: true, // Allow credentials if needed
-  })
+  cors()
 );
 
 app.use(bodyParser.json());
