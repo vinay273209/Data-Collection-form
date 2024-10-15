@@ -4,13 +4,21 @@ const cors = require("cors");
 const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
 
 // Initialize the app
 const app = express();
 
 // Use CORS middleware
 app.use(
-  cors()
+  cors({
+    origin: [
+      "https://sarika-agrawal.github.io",
+      "https://vinay273209.github.io/",
+    ], // Allow your GitHub Pages domain
+    methods: ["GET", "POST"], // Specify allowed methods
+    credentials: true, // Allow credentials if needed
+  })
 );
 
 app.use(bodyParser.json());
@@ -64,8 +72,48 @@ const checkDuplicateRollNumbers = (workbook, newRollNumbers) => {
   return duplicates;
 };
 
+// Function to upload Excel file to GitHub
+const uploadToGitHub = async (filePath, fileName) => {
+  try {
+    const token = process.env.GITHUB_TOKEN;
+    const repoOwner = "vinay273209";
+    const repoName = "KIET-CS-Students-Project-Group";
+    const branch = "master";
+    const githubFilePath = `https://github.com/vinay273209/KIET-CS-Students-Project-Group/blob/master/${fileName}`; // Path to upload the file in GitHub
+
+    // Read file content
+    const fileContent = fs.readFileSync(filePath, { encoding: "base64" });
+
+    // Create the commit
+    const response = await axios.put(
+      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${githubFilePath}`,
+      {
+        message: `Upload ${fileName}`,
+        content: fileContent,
+        branch: branch,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 201) {
+      console.log(
+        "File uploaded successfully:",
+        response.data.content.html_url
+      );
+    } else {
+      console.error("Failed to upload file:", response.status, response.data);
+    }
+  } catch (error) {
+    console.error("Error uploading file to GitHub:", error.message);
+  }
+};
+
 // POST route to handle data submission
-app.post("/submit", (req, res) => {
+app.post("/submit", async (req, res) => {
   try {
     console.log("Received data:", req.body);
     const { projectTitle, members } = req.body;
@@ -142,7 +190,7 @@ app.post("/submit", (req, res) => {
       Group_ID: groupId,
       Name: member.name,
       Mobile_No: member.mobile,
-      Email_Id: member.email, // Add the email field
+      Email_Id: member.email,
       Project_Title: projectTitle,
     }));
 
@@ -155,7 +203,13 @@ app.post("/submit", (req, res) => {
     // Write the updated workbook to the file
     XLSX.writeFile(workbook, filename);
 
-    res.json({ message: "Group successfully submitted." });
+    // Call the function to upload the file to GitHub
+    await uploadToGitHub(filename, filename);
+
+    res.json({
+      message:
+        "Data successfully submitted, saved to Excel, and uploaded to GitHub!",
+    });
   } catch (error) {
     console.error("Error processing request:", error.message || error);
     res
