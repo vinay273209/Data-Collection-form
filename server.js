@@ -155,7 +155,7 @@ app.post("/submit", (req, res) => {
     // Write the updated workbook to the file
     XLSX.writeFile(workbook, filename);
 
-    res.json({ message: "Data successfully submitted and saved to Excel!" });
+    res.json({ message: "Group successfully submitted." });
   } catch (error) {
     console.error("Error processing request:", error.message || error);
     res
