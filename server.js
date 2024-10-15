@@ -79,14 +79,14 @@ const uploadToGitHub = async (filePath, fileName) => {
     const repoOwner = "vinay273209";
     const repoName = "KIET-CS-Students-Project-Group";
     const branch = "master";
-    const githubFilePath = `https://github.com/vinay273209/KIET-CS-Students-Project-Group/blob/master/${fileName}`; // Path to upload the file in GitHub
+    const githubFilePath = `blob/master/${fileName}`; // Path to upload the file in GitHub
 
     // Read file content
     const fileContent = fs.readFileSync(filePath, { encoding: "base64" });
 
     // Create the commit
     const response = await axios.put(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${githubFilePath}`,
+      `https://github.com/${repoOwner}/${repoName}/${githubFilePath}`,
       {
         message: `Upload ${fileName}`,
         content: fileContent,
