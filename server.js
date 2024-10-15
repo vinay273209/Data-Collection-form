@@ -5,6 +5,7 @@ const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
+require("dotenv").config();
 
 // Initialize the app
 const app = express();
@@ -75,18 +76,21 @@ const checkDuplicateRollNumbers = (workbook, newRollNumbers) => {
 // Function to upload Excel file to GitHub
 const uploadToGitHub = async (filePath, fileName) => {
   try {
-    const token = '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';
+    const token = process.env.GITHUB_TOKEN;
     const repoOwner = "vinay273209";
     const repoName = "KIET-CS-Students-Project-Group";
     const branch = "master";
-    const githubFilePath = `contents/${fileName}`; // Path to upload the file in GitHub
+    const githubFilePath = `contents/${fileName}`;
+
+    // Check if token is loaded
+    console.log("GitHub Token Loaded:", token ? "Yes" : "No");
 
     // Read file content
     const fileContent = fs.readFileSync(filePath, { encoding: "base64" });
 
     // Create the commit
     const response = await axios.put(
-      `https://api.github.com/repos/${repoOwner}/${repoName}/${githubFilePath}`,
+      `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${fileName}`,
       {
         message: `Upload ${fileName}`,
         content: fileContent,
