@@ -75,7 +75,7 @@ const checkDuplicateRollNumbers = (workbook, newRollNumbers) => {
 // Function to upload Excel file to GitHub
 const uploadToGitHub = async (filePath, fileName) => {
   try {
-    const token = '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';
+    const token = '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';
     const repoOwner = "vinay273209";
     const repoName = "KIET-CS-Students-Project-Group";
     const branch = "master";
