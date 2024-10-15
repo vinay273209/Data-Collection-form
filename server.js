@@ -75,18 +75,18 @@ const checkDuplicateRollNumbers = (workbook, newRollNumbers) => {
 // Function to upload Excel file to GitHub
 const uploadToGitHub = async (filePath, fileName) => {
   try {
-    const token = process.env.GITHUB_TOKEN;
+    const token = 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;
     const repoOwner = "vinay273209";
     const repoName = "KIET-CS-Students-Project-Group";
     const branch = "master";
-    const githubFilePath = `blob/master/${fileName}`; // Path to upload the file in GitHub
+    const githubFilePath = `contents/${fileName}`; // Path to upload the file in GitHub
 
     // Read file content
     const fileContent = fs.readFileSync(filePath, { encoding: "base64" });
 
     // Create the commit
     const response = await axios.put(
-      `https://github.com/${repoOwner}/${repoName}/${githubFilePath}`,
+      `https://api.github.com/repos/${repoOwner}/${repoName}/${githubFilePath}`,
       {
         message: `Upload ${fileName}`,
         content: fileContent,
